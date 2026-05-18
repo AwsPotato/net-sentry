@@ -1,0 +1,51 @@
+# Build directories
+build/
+bin/
+out/
+x64/
+x86/
+
+# CMake generated files/directories
+CMakeFiles/
+CMakeSettings.json
+CMakeUserPresets.json
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+install_manifest.txt
+_deps/
+
+# Compiled files
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.a
+*.obj
+*.o
+*.pdb
+*.ilk
+*.exp
+
+# IDEs and editors
+.vs/
+.vscode/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.user
+.idea/
+*.swp
+*~
+
+# Operating system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Temporary / Log files
+*.log
