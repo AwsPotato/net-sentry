@@ -22,6 +22,7 @@
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
+#include <implot.h>
 
 #include "packet_utils.hpp"
 #include "dns_tracker.hpp"
@@ -39,6 +40,69 @@ std::atomic<bool> g_shutdown_requested{false};
 std::atomic<uint64_t> g_packet_count{0};
 std::atomic<int> g_link_type{1}; // Default to 1 (DLT_EN10MB)
 pcap_t* g_pcap_handle = nullptr;
+
+void ApplyModernTheme() {
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.WindowRounding = 6.0f;
+    style.FrameRounding = 6.0f;
+    style.PopupRounding = 6.0f;
+    style.ScrollbarRounding = 6.0f;
+    style.GrabRounding = 6.0f;
+    style.TabRounding = 6.0f;
+    
+    style.ItemSpacing = ImVec2(8.0f, 6.0f);
+    style.WindowPadding = ImVec2(12.0f, 12.0f);
+    
+    ImVec4* colors = style.Colors;
+    colors[ImGuiCol_Text] = ImVec4(0.95f, 0.96f, 0.98f, 1.00f);
+    colors[ImGuiCol_TextDisabled] = ImVec4(0.36f, 0.42f, 0.47f, 1.00f);
+    colors[ImGuiCol_WindowBg] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+    colors[ImGuiCol_ChildBg] = ImVec4(0.15f, 0.18f, 0.22f, 1.00f);
+    colors[ImGuiCol_PopupBg] = ImVec4(0.08f, 0.08f, 0.08f, 0.94f);
+    colors[ImGuiCol_Border] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+    colors[ImGuiCol_BorderShadow] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+    colors[ImGuiCol_FrameBgHovered] = ImVec4(0.12f, 0.20f, 0.28f, 1.00f);
+    colors[ImGuiCol_FrameBgActive] = ImVec4(0.09f, 0.12f, 0.14f, 1.00f);
+    colors[ImGuiCol_TitleBg] = ImVec4(0.09f, 0.12f, 0.14f, 0.65f);
+    colors[ImGuiCol_TitleBgActive] = ImVec4(0.08f, 0.10f, 0.12f, 1.00f);
+    colors[ImGuiCol_TitleBgCollapsed] = ImVec4(0.00f, 0.00f, 0.00f, 0.51f);
+    colors[ImGuiCol_MenuBarBg] = ImVec4(0.15f, 0.18f, 0.22f, 1.00f);
+    colors[ImGuiCol_ScrollbarBg] = ImVec4(0.02f, 0.02f, 0.02f, 0.39f);
+    colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.18f, 0.22f, 0.25f, 1.00f);
+    colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.09f, 0.21f, 0.31f, 1.00f);
+    colors[ImGuiCol_CheckMark] = ImVec4(0.28f, 0.56f, 1.00f, 1.00f);
+    colors[ImGuiCol_SliderGrab] = ImVec4(0.28f, 0.56f, 1.00f, 1.00f);
+    colors[ImGuiCol_SliderGrabActive] = ImVec4(0.37f, 0.61f, 1.00f, 1.00f);
+    colors[ImGuiCol_Button] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+    colors[ImGuiCol_ButtonHovered] = ImVec4(0.28f, 0.56f, 1.00f, 1.00f);
+    colors[ImGuiCol_ButtonActive] = ImVec4(0.06f, 0.53f, 0.98f, 1.00f);
+    colors[ImGuiCol_Header] = ImVec4(0.20f, 0.25f, 0.29f, 0.55f);
+    colors[ImGuiCol_HeaderHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+    colors[ImGuiCol_HeaderActive] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_Separator] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+    colors[ImGuiCol_SeparatorHovered] = ImVec4(0.10f, 0.40f, 0.75f, 0.78f);
+    colors[ImGuiCol_SeparatorActive] = ImVec4(0.10f, 0.40f, 0.75f, 1.00f);
+    colors[ImGuiCol_ResizeGrip] = ImVec4(0.26f, 0.59f, 0.98f, 0.25f);
+    colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.67f);
+    colors[ImGuiCol_ResizeGripActive] = ImVec4(0.26f, 0.59f, 0.98f, 0.95f);
+    colors[ImGuiCol_Tab] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+    colors[ImGuiCol_TabHovered] = ImVec4(0.26f, 0.59f, 0.98f, 0.80f);
+    colors[ImGuiCol_TabActive] = ImVec4(0.20f, 0.25f, 0.29f, 1.00f);
+    colors[ImGuiCol_TabUnfocused] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+    colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.11f, 0.15f, 0.17f, 1.00f);
+    colors[ImGuiCol_PlotLines] = ImVec4(0.61f, 0.61f, 0.61f, 1.00f);
+    colors[ImGuiCol_PlotLinesHovered] = ImVec4(1.00f, 0.43f, 0.35f, 1.00f);
+    colors[ImGuiCol_PlotHistogram] = ImVec4(0.90f, 0.70f, 0.00f, 1.00f);
+    colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
+    colors[ImGuiCol_TextSelectedBg] = ImVec4(0.26f, 0.59f, 0.98f, 0.35f);
+    colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+    colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+    colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+    colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+    colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
+}
 
 // Primary Packet Handler Callback
 // Executed instantly by Npcap driver upon packet arrival
@@ -237,11 +301,16 @@ int main() {
     // Setup Dear ImGui context
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
+    ImPlot::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    
+    ImFont* mainFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
+    (void)mainFont;
+    ImFont* headerFont = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\segoeb.ttf", 22.0f);
 
-    ImGui::StyleColorsDark();
+    ApplyModernTheme();
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
@@ -258,23 +327,43 @@ int main() {
 
         ImGui::SetNextWindowPos(ImVec2(0, 0));
         ImGui::SetNextWindowSize(io.DisplaySize);
-        ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
+        ImGui::Begin("Main Dashboard", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings);
 
         if (!g_capture_running) {
-            ImGui::Text("Select a Network Adapter for Capture:");
+            ImVec2 size(700, 500);
+            ImVec2 pos((io.DisplaySize.x - size.x) * 0.5f, (io.DisplaySize.y - size.y) * 0.5f);
+            ImGui::SetCursorPos(pos);
+
+            ImGui::BeginChild("Initialize Capture Engine", size, true, ImGuiWindowFlags_None);
+            
+            ImGui::Dummy(ImVec2(0.0f, 15.0f));
+            if (headerFont) ImGui::PushFont(headerFont);
+            ImGui::SetCursorPosX((size.x - ImGui::CalcTextSize("Select Network Adapter").x) * 0.5f);
+            ImGui::Text("Select Network Adapter");
+            if (headerFont) ImGui::PopFont();
+            ImGui::Dummy(ImVec2(0.0f, 15.0f));
             ImGui::Separator();
-            for (size_t i = 0; i < adapters.size(); i++) {
-                std::string label = adapters[i].description + " (" + adapters[i].name + ")";
-                if (ImGui::Button(label.c_str(), ImVec2(-1, 0))) {
-                    if (capture_thread.joinable()) {
-                        capture_thread.join();
+            ImGui::Dummy(ImVec2(0.0f, 15.0f));
+
+            if (ImGui::BeginChild("AdapterList", ImVec2(0, 0), false)) {
+                for (size_t i = 0; i < adapters.size(); i++) {
+                    ImGui::PushTextWrapPos(ImGui::GetContentRegionAvail().x - 20.0f);
+                    std::string label = adapters[i].description + "\n[" + adapters[i].name + "]";
+                    if (ImGui::Button(label.c_str(), ImVec2(ImGui::GetContentRegionAvail().x, 60))) {
+                        if (capture_thread.joinable()) {
+                            capture_thread.join();
+                        }
+                        capture_thread = std::thread(capture_worker, adapters[i].name);
+                        // Wait a tiny bit for thread to start so g_capture_running becomes true
+                        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+                        break;
                     }
-                    capture_thread = std::thread(capture_worker, adapters[i].name);
-                    // Wait a tiny bit for thread to start so g_capture_running becomes true
-                    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-                    break;
+                    ImGui::PopTextWrapPos();
+                    ImGui::Dummy(ImVec2(0.0f, 8.0f));
                 }
             }
+            ImGui::EndChild();
+            ImGui::EndChild();
         } else {
             // Header showing active status and a Disconnect button
             ImGui::Text("Capturing from active adapter... Raw Packets Sniffed: %llu", g_packet_count.load());
@@ -325,15 +414,20 @@ int main() {
                     }
                     ImGui::SetClipboardText(ss.str().c_str());
                 }
+                
+                static ImGuiTextFilter dns_filter;
+                dns_filter.Draw("Filter##DNS", ImGui::GetContentRegionAvail().x);
                 ImGui::Separator();
                 if (ImGui::BeginChild("DNSFeed", ImVec2(0, ImGui::GetContentRegionAvail().y / 2), true)) {
                     std::lock_guard<std::mutex> lock(g_telemetry_state.mtx);
                     for (auto it = g_telemetry_state.dns_events.rbegin(); it != g_telemetry_state.dns_events.rend(); ++it) {
-                        if (ImGui::Selectable(it->domain.c_str())) {
-                            ImGui::SetClipboardText(it->domain.c_str());
-                        }
-                        if (ImGui::IsItemHovered()) {
-                            ImGui::SetTooltip("Click to copy domain to clipboard");
+                        if (dns_filter.PassFilter(it->domain.c_str())) {
+                            if (ImGui::Selectable(it->domain.c_str())) {
+                                ImGui::SetClipboardText(it->domain.c_str());
+                            }
+                            if (ImGui::IsItemHovered()) {
+                                ImGui::SetTooltip("Click to copy domain to clipboard");
+                            }
                         }
                     }
                 }
@@ -348,6 +442,9 @@ int main() {
                         ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 50, 50, 255));
                         for (auto it = g_telemetry_state.intrusion_alerts.rbegin(); it != g_telemetry_state.intrusion_alerts.rend(); ++it) {
                             ImGui::Text("Port scan from %s (ports: %d)", it->ip.c_str(), it->port_count);
+                            if (ImGui::IsItemHovered()) {
+                                ImGui::SetTooltip("Targeted %d distinct ports recently", it->port_count);
+                            }
                         }
                         ImGui::PopStyleColor();
                     } else {
@@ -364,9 +461,11 @@ int main() {
                 if (ImGui::BeginChild("JitterTelemetry", ImVec2(0, 0), true)) {
                     std::lock_guard<std::mutex> lock(g_telemetry_state.mtx);
                     if (!g_telemetry_state.udp_jitter_history.empty()) {
-                        ImGui::PlotLines("Jitter (us)", g_telemetry_state.udp_jitter_history.data(),
-                                         static_cast<int>(g_telemetry_state.udp_jitter_history.size()),
-                                         0, nullptr, 0.0f, FLT_MAX, ImVec2(-1, 200));
+                        if (ImPlot::BeginPlot("##JitterPlot", ImVec2(-1, -1), ImPlotFlags_NoTitle | ImPlotFlags_NoLegend)) {
+                            ImPlot::SetupAxes("Time", "Jitter (us)", ImPlotAxisFlags_AutoFit, ImPlotAxisFlags_AutoFit);
+                            ImPlot::PlotLine("Jitter", g_telemetry_state.udp_jitter_history.data(), static_cast<int>(g_telemetry_state.udp_jitter_history.size()));
+                            ImPlot::EndPlot();
+                        }
                     } else {
                         ImGui::Text("Awaiting UDP telemetry...");
                     }
@@ -400,6 +499,7 @@ int main() {
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
+    ImPlot::DestroyContext();
     ImGui::DestroyContext();
     glfwDestroyWindow(window);
     glfwTerminate();

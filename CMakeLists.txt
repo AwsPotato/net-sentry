@@ -29,6 +29,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(imgui)
 
+FetchContent_Declare(
+    implot
+    URL https://github.com/epezent/implot/archive/refs/heads/master.zip
+)
+FetchContent_MakeAvailable(implot)
+
 # Setup ImGui library
 set(IMGUI_DIR ${imgui_SOURCE_DIR})
 add_library(imgui STATIC
@@ -42,14 +48,29 @@ add_library(imgui STATIC
 target_include_directories(imgui PUBLIC ${IMGUI_DIR} ${IMGUI_DIR}/backends)
 target_link_libraries(imgui PUBLIC glfw opengl32)
 
+# Setup ImPlot library
+set(IMPLOT_DIR ${implot_SOURCE_DIR})
+add_library(implot STATIC
+    ${IMPLOT_DIR}/implot.cpp
+    ${IMPLOT_DIR}/implot_items.cpp
+)
+target_include_directories(implot PUBLIC ${IMPLOT_DIR})
+target_link_libraries(implot PUBLIC imgui)
+
 # Create the main executable target
 add_executable(NetSentry
     src/main.cpp
 )
 
 # Note: winsock2.h must be linked on Windows alongside wpcap and Packet
-# We also link imgui, glfw, and opengl32 for the UI
-target_link_libraries(NetSentry wpcap Packet ws2_32 imgui glfw opengl32)
+# We also link imgui, implot, glfw, and opengl32 for the UI
+target_link_libraries(NetSentry wpcap Packet ws2_32 imgui implot glfw opengl32)
+
+if(MSVC)
+    set_target_properties(NetSentry PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+elseif(MINGW)
+    set_target_properties(NetSentry PROPERTIES LINK_FLAGS "-mwindows")
+endif()
 
 # Optional: Add compiler warnings for cleaner production-grade code
 if(MSVC)
